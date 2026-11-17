@@ -159,9 +159,3 @@ make test           # Go unit/integration tests + Frontend vitest
 make build          # Go binary build + Next.js production build
 ```
 
----
-
-## Preserved Legacy Work
-
-The earlier GitHub webhook + OpenAI starter integration was preserved and relocated to:
-- [`tools/github-bot/`](file:///c:/Users/admin/Documents/GitHub/Plymouth%20Projects/worksphere/tools/github-bot)
