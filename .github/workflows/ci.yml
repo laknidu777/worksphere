@@ -1,0 +1,95 @@
+name: WorkSphere CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-secrets:
+    name: Secrets & Hygiene Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  backend-ci:
+    name: Backend CI (Go)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache-dependency-path: apps/api/go.sum
+
+      - name: Verify Go Formatting
+        run: |
+          cd apps/api
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Unformatted Go files detected:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Run Go Tests
+        run: |
+          cd apps/api
+          go test -v -race ./...
+
+      - name: Build Go Binary
+        run: |
+          cd apps/api
+          CGO_ENABLED=0 go build -v -o bin/server cmd/server/main.go
+
+  frontend-ci:
+    name: Frontend CI (Next.js)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd apps/web
+          npm ci
+
+      - name: Run Frontend Linter
+        run: |
+          cd apps/web
+          npm run lint
+
+      - name: Run Frontend Tests
+        run: |
+          cd apps/web
+          npm run test
+
+      - name: Build Next.js Application
+        run: |
+          cd apps/web
+          npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1

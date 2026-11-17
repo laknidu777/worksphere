@@ -1,0 +1,25 @@
+# WorkSphere Helm Default Values
+replicaCount: 2
+
+image:
+  api:
+    repository: worksphere-api
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+  web:
+    repository: worksphere-web
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: alb
+  hosts:
+    - host: app.worksphere.lk
+      paths:
+        - path: /
+          pathType: Prefix

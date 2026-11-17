@@ -1,0 +1,12 @@
+# Gitleaks Configuration for WorkSphere
+title = "WorkSphere Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlists for local documentation and templates"
+paths = [
+  '''^\.env\.example$''',
+  '''^docs/.*$'''
+]

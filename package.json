@@ -1,18 +1,15 @@
 {
-  "name": "worksphere-github-openai-integration",
-  "version": "1.0.0",
-  "description": "GitHub App + OpenAI integration starter for WorkSphere",
-  "main": "server.js",
+  "name": "worksphere-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "check": "node --check server.js"
-  },
-  "dependencies": {
-    "@octokit/auth-app": "^7.1.1",
-    "@octokit/rest": "^21.0.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.2",
-    "openai": "^4.47.1"
+    "web:dev": "npm --workspace=@worksphere/web run dev",
+    "web:build": "npm --workspace=@worksphere/web run build",
+    "web:lint": "npm --workspace=@worksphere/web run lint",
+    "web:test": "npm --workspace=@worksphere/web run test"
   }
 }
